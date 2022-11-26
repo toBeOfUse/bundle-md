@@ -20,12 +20,14 @@ function crawl(dir_path: string): Folder {
 function recursiveCrawl(dir_path: string): Folder {
     const children = fs.readdirSync(dir_path)
         .map(c => path.join(dir_path, c)).sort();
-    const folder: Folder = { path: dir_path, children: [] as Folder[] };
+    const folder: Folder = {
+        path: dir_path,
+        children: [] as Folder[],
+        description: getReadme(dir_path)
+    };
     for (const child of children) {
         if (fs.lstatSync(child).isDirectory()) {
             folder.children.push(recursiveCrawl(child));
-        } else if (path.parse(child).base.toLowerCase() == "readme.md") {
-            folder.description = getReadme(child);
         }
     }
     return folder;

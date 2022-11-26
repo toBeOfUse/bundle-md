@@ -1,27 +1,24 @@
 import fs from "fs";
+import path from "path";
 
 interface Readme {
-    contents: string;
-    details: string;
+    contents?: string[];
+    details?: string;
 }
 
-const contentSummaryDemarcator = "contents:";
-
-function getReadme(path: string): Readme {
-    const readme = fs.readFileSync(path, { encoding: "utf-8" })
-        .replace(/\r\n/g, "\n");
-    let contents = "";
-    const lines = readme.split("\n");
-    for (const line of lines) {
-        if (line.toLowerCase().startsWith(contentSummaryDemarcator)) {
-            contents = line.substring(contentSummaryDemarcator.length).trim();
-            break;
+function getReadme(dir_path: string): Readme {
+    let result: Readme = {};
+    for (const file of fs.readdirSync(dir_path)) {
+        const casefoldName = path.parse(file).base.toLowerCase();
+        const fullPath = path.resolve(dir_path, file);
+        if (casefoldName == "readme.md") {
+            result.details = fs.readFileSync(fullPath, { encoding: "utf-8" });
+        } else if (casefoldName == "contents.md") {
+            result.contents = fs.readFileSync(fullPath, { encoding: "utf-8" })
+                .trim().split("\n").filter(l => l.trim().length > 0);
         }
     }
-    return {
-        contents,
-        details: readme
-    };
+    return result;
 }
 
 export { Readme, getReadme };

@@ -54,8 +54,8 @@ function buildDirSVG(root: Folder): string {
             recursiveBuild(child, depth + 1);
         }
         const desc = folder.description?.contents;
-        if (desc) {
-            svg.appendChild(getLineGroup("file", index++, depth + 1, desc));
+        for (const d of desc || []) {
+            svg.appendChild(getLineGroup("file", index++, depth + 1, d));
         }
     }
     recursiveBuild(root, 0);
