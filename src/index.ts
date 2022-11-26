@@ -1,9 +1,10 @@
-import fs from "fs";
+import fs from "fs-extra";
+import path from "path";
 
 import { ArgumentParser } from "argparse";
 
-import { crawl } from "./crawler";
-import { buildDirSVG } from "./drawer";
+import { crawl, Folder } from "./crawler";
+import { compileMarkdown } from "./markdowner";
 
 const parser = new ArgumentParser({
     description: "Bundle README files from different directories into a single Markdown file."
@@ -15,10 +16,19 @@ parser.add_argument("roots", {
     nargs: "+"
 });
 
+parser.add_argument("--output", "-o", {
+    metavar: "output_directory",
+    type: "str",
+    default: "output"
+})
+
 const args = parser.parse_args();
+console.log(args);
+const output_dir = path.resolve(process.cwd(), args.output);
 
-for (const root of args.roots) {
-    console.log(crawl(root));
-}
+const folders: Folder[] = args.roots.map(crawl);
+const documents = folders.map(
+    f => compileMarkdown(f, output_dir)
+);
 
-fs.writeFileSync("test.svg", buildDirSVG(crawl(args.roots[0])));
+fs.outputFileSync(path.resolve(output_dir, "README.md"), documents.join("\n\n"));

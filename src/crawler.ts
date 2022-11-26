@@ -2,20 +2,28 @@ import fs from "fs";
 import path from "path";
 
 import { Readme, getReadme } from "./parser";
+import { buildDirSVG } from "./drawer";
 
 interface Folder {
     path: string;
     children: Folder[];
     description?: Readme;
+    treeSVG?: string;
 }
 
 function crawl(dir_path: string): Folder {
+    const result = recursiveCrawl(dir_path);
+    result.treeSVG = buildDirSVG(result);
+    return result;
+}
+
+function recursiveCrawl(dir_path: string): Folder {
     const children = fs.readdirSync(dir_path)
         .map(c => path.join(dir_path, c)).sort();
     const folder: Folder = { path: dir_path, children: [] as Folder[] };
     for (const child of children) {
         if (fs.lstatSync(child).isDirectory()) {
-            folder.children.push(crawl(child));
+            folder.children.push(recursiveCrawl(child));
         } else if (path.parse(child).base.toLowerCase() == "readme.md") {
             folder.description = getReadme(child);
         }
