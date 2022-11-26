@@ -18,7 +18,7 @@ function buildDocument(
         return [];
     }
     let result: MDDocument = [
-        Array(depth).fill("#").join("") + " " + folder.path + "\n\n"
+        Array(depth).fill("#").join("") + " " + folder.path.replace("\\", "/")
     ];
     if (folder.treeSVG) {
         result.push({
@@ -43,7 +43,7 @@ function compileMarkdown(
     let result = "";
     for (const element of document) {
         if (typeof element == "string") {
-            result += element;
+            result += "\n" + element + "\n";
         } else {
             const imagePath = path.resolve(imagesPath, element.filename);
             fs.outputFileSync(imagePath, element.xml);

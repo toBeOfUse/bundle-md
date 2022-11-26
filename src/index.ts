@@ -23,7 +23,6 @@ parser.add_argument("--output", "-o", {
 })
 
 const args = parser.parse_args();
-console.log(args);
 const output_dir = path.resolve(process.cwd(), args.output);
 
 const folders: Folder[] = args.roots.map(crawl);
@@ -31,4 +30,4 @@ const documents = folders.map(
     f => compileMarkdown(f, output_dir)
 );
 
-fs.outputFileSync(path.resolve(output_dir, "README.md"), documents.join("\n\n"));
+fs.outputFileSync(path.resolve(output_dir, "bundle.md"), documents.join("\n\n"));
