@@ -27,7 +27,7 @@ parser.add_argument("--output", "-o", {
 const args = parser.parse_args();
 const output_dir = path.resolve(process.cwd(), args.output);
 
-const folders: Folder[] = args.roots.map(crawl);
+const folders: Folder[] = args.roots.map((r: string) => crawl(path.resolve(r)));
 const documents = folders.map(
     f => compileMarkdown(f, output_dir)
 );

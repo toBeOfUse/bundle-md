@@ -1,6 +1,6 @@
 {
   "name": "bundle-md",
-  "version": "0.9.1",
+  "version": "0.9.3",
   "description": "Document your project's structure by bundling directory READMEs.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
