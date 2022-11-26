@@ -11,6 +11,8 @@ const lineHeight = 10;
 const indentWidth = 10;
 const textHeight = 6;
 const iconHeight = 8;
+const imageWidth = 250;
+const padding = 5;
 
 function getLineGroup(
     type: "file" | "folder", index: number, depth: number, text: string
@@ -20,7 +22,6 @@ function getLineGroup(
         "transform",
         `translate(${indentWidth * depth} ${index * lineHeight})`
     );
-    // TODO: html-encode text
     g.innerHTML = `
     <use x="0" y="${lineHeight - iconHeight}" width="${iconHeight}"
         height="${iconHeight}" href="#${type}"></use>
@@ -44,10 +45,8 @@ function buildDirSVG(root: Folder): string {
         defs.insertAdjacentHTML("beforeend", depContents);
         (defs.lastChild as SVGElement).setAttribute("id", dep);
     }
-    svg.appendChild(defs);
     let index = 0;
     function recursiveBuild(folder: Folder, depth: number) {
-        console.log(folder);
         const folderName = path.parse(folder.path).name;
         svg.appendChild(getLineGroup("folder", index++, depth, folderName));
         for (const child of folder.children) {
@@ -59,7 +58,20 @@ function buildDirSVG(root: Folder): string {
         }
     }
     recursiveBuild(root, 0);
-    svg.setAttributeNS("http://www.w3.org/2000/svg", "viewBox", `0 0 250 ${index * lineHeight}`);
+    const imageHeight = index * lineHeight;
+    const bg = doc.createElement("rect");
+    bg.setAttribute("x", (-padding).toString());
+    bg.setAttribute("y", (-padding).toString());
+    bg.setAttribute("width", (imageWidth + padding * 2).toString());
+    bg.setAttribute("height", (imageHeight + padding * 2).toString());
+    bg.setAttribute("fill", "white");
+    svg.prepend(bg);
+    svg.prepend(defs);
+    svg.setAttributeNS(
+        "http://www.w3.org/2000/svg",
+        "viewBox",
+        `-${padding} 0 ${imageWidth + padding * 2} ${imageHeight + padding * 2}`
+    );
     return svg.outerHTML;
 }
 
