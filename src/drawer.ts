@@ -1,13 +1,16 @@
 import fs from "fs";
 import path from "path";
 
+import he from "he";
 import { JSDOM } from "jsdom";
 const doc = new JSDOM("").window.document;
 
 import { Folder } from "./crawler";
 
 const lineHeight = 10;
-const indentWidth = 8;
+const indentWidth = 10;
+const textHeight = 6;
+const iconHeight = 8;
 
 function getLineGroup(
     type: "file" | "folder", index: number, depth: number, text: string
@@ -18,8 +21,13 @@ function getLineGroup(
         `translate(${indentWidth * depth} ${index * lineHeight})`
     );
     // TODO: html-encode text
-    g.innerHTML = `<use x="0" y="0" width="${lineHeight}px" height="${lineHeight}px" href="#${type}"></use>
-        <text dominant-baseline="middle" x="${indentWidth + lineHeight}px" y="${lineHeight / 2}px" font-size="${lineHeight - 2}px">${text}</text>`
+    g.innerHTML = `
+    <use x="0" y="${lineHeight - iconHeight}" width="${iconHeight}"
+        height="${iconHeight}" href="#${type}"></use>
+
+    <text dominant-baseline="middle" x="${iconHeight * 1.5}"
+        y="${lineHeight - textHeight / 2}" font-size="${textHeight}"
+        font-family="sans-serif">${he.encode(text)}</text>`
     return g;
 }
 
@@ -51,7 +59,7 @@ function buildDirSVG(root: Folder): string {
         }
     }
     recursiveBuild(root, 0);
-    svg.setAttributeNS("http://www.w3.org/2000/svg", "viewBox", `0 0 300 ${index * lineHeight}`);
+    svg.setAttributeNS("http://www.w3.org/2000/svg", "viewBox", `0 0 250 ${index * lineHeight}`);
     return svg.outerHTML;
 }
 
