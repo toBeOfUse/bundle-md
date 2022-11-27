@@ -1,10 +1,11 @@
 import fs from "fs-extra";
 import path from "path";
 import crypto from "crypto";
+import slugify from "slugify";
 import { Folder } from "./crawler";
 
 const hash = (s: string) =>
-    crypto.createHash("md5").update(s).digest("hex");
+    crypto.createHash("md5").update(s).digest("hex").substring(0, 8);
 
 /**
  * Sequence of Markdown strings and objects representing SVG images.
@@ -23,7 +24,8 @@ function buildDocument(
     if (folder.treeSVG) {
         result.push({
             xml: folder.treeSVG,
-            filename: hash(folder.treeSVG) + ".svg"
+            filename: slugify(folder.path.replace(path.sep, "-")) +
+                "-" + hash(folder.treeSVG) + ".svg"
         });
     }
     if (folder.description?.details) {
