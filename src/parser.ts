@@ -15,13 +15,15 @@ interface Readme {
  */
 function getReadme(dir_path: string): Readme {
     let result: Readme = { contents: [] };
-    for (const dirent of fs.readdirSync(dir_path, { withFileTypes: true })) {
+    for (const dirent of fs.readdirSync(dir_path, { withFileTypes: true, encoding: "utf-8" })) {
         if (!dirent.isFile()) {
             continue;
         }
         const fullPath = path.resolve(dir_path, dirent.name);
         const casefoldName = dirent.name.toLowerCase();
+        // console.log("dirent:", dirent);
         if (casefoldName == "readme.md") {
+            // console.log("which is a readme! at path", fullPath);
             result.details = fs.readFileSync(fullPath, { encoding: "utf-8" });
         } else if (casefoldName == "contents.md") {
             result.contents = fs.readFileSync(fullPath, { encoding: "utf-8" })

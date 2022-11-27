@@ -15,12 +15,12 @@ type MDDocument = (string | { filename: string, xml: string })[];
 function buildDocument(
     folder: Folder, depth: number, images_dir: string
 ): MDDocument {
-    if (!folder.description?.details && !folder.treeSVG) {
-        return [];
+    let result: MDDocument = [];
+    if (folder.description?.details || folder.treeSVG) {
+        result.push(
+            Array(depth).fill("#").join("") + " " + folder.path.replace("\\", "/")
+        );
     }
-    let result: MDDocument = [
-        Array(depth).fill("#").join("") + " " + folder.path.replace("\\", "/")
-    ];
     if (folder.treeSVG) {
         result.push({
             xml: folder.treeSVG,
