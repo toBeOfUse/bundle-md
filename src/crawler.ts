@@ -40,4 +40,22 @@ function recursiveCrawl(dir_path: string): Folder {
     return folder;
 }
 
-export { crawl, Folder };
+/**
+ * Recursively updates Folder paths to be relative to a root directory, but
+ * including the root directory's name at the beginning of the path, so it's
+ * really more like making the paths relative to the root's parent, but without
+ * making the assumption that the root's parent exists. Also uses a particular
+ * path separator if you want; the output from this is more decorative than
+ * functional.
+ */
+function makePathsRelativeTo(
+    folder: Folder, root_path: string, useSep: string = path.sep
+) {
+    folder.path = root_path + path.sep + path.relative(root_path, folder.path);
+    folder.path = folder.path.split(path.sep).join(useSep);
+    for (const child of folder.children) {
+        makePathsRelativeTo(child, root_path);
+    }
+}
+
+export { crawl, makePathsRelativeTo, Folder };

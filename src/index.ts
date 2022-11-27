@@ -5,7 +5,7 @@ import path from "path";
 
 import { ArgumentParser } from "argparse";
 
-import { crawl, Folder } from "./crawler";
+import { crawl, Folder, makePathsRelativeTo } from "./crawler";
 import { compileMarkdown } from "./markdowner";
 
 const parser = new ArgumentParser({
@@ -28,7 +28,9 @@ const args = parser.parse_args();
 const output_dir = path.resolve(process.cwd(), args.output);
 const roots = args.roots.map((r: string) => path.resolve(process.cwd(), r));
 
-const folders: Folder[] = roots.map((r: string) => crawl(r));
+const folders: Folder[] = roots.map(
+    (r: string) => makePathsRelativeTo(crawl(r), r, "/")
+);
 const documents = folders.map(f => compileMarkdown(f, output_dir));
 
 fs.outputFileSync(path.resolve(output_dir, "bundle.md"), documents.join("\n\n"));
