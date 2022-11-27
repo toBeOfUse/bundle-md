@@ -28,9 +28,13 @@ const args = parser.parse_args();
 const output_dir = path.resolve(process.cwd(), args.output);
 const roots = args.roots.map((r: string) => path.resolve(process.cwd(), r));
 
-const folders: Folder[] = roots.map(
-    (r: string) => makePathsRelativeTo(crawl(r), r, "/")
-);
+const folders: Folder[] = roots.map(crawl);
+
+for (let i = 0; i < folders.length; i++) {
+    const root = roots[i];
+    makePathsRelativeTo(folders[i], root, "/");
+}
+
 const documents = folders.map(f => compileMarkdown(f, output_dir));
 
 fs.outputFileSync(path.resolve(output_dir, "bundle.md"), documents.join("\n\n"));

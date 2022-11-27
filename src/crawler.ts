@@ -51,10 +51,17 @@ function recursiveCrawl(dir_path: string): Folder {
 function makePathsRelativeTo(
     folder: Folder, root_path: string, useSep: string = path.sep
 ) {
-    folder.path = root_path + path.sep + path.relative(root_path, folder.path);
+    console.log("making", folder.path, "relative to", root_path, "with separator", useSep);
+    folder.path = path.basename(root_path) + path.sep +
+        path.relative(root_path, folder.path);
     folder.path = folder.path.split(path.sep).join(useSep);
+    if (folder.path.endsWith(useSep)) {
+        // trim trailing slash if necessary
+        folder.path = folder.path.substring(0, folder.path.length - 1);
+    }
+    console.log("result:", folder.path);
     for (const child of folder.children) {
-        makePathsRelativeTo(child, root_path);
+        makePathsRelativeTo(child, root_path, useSep);
     }
 }
 
