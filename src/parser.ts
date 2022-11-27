@@ -6,6 +6,13 @@ interface Readme {
     details?: string;
 }
 
+/**
+ * Grab the data in a directory's Markdown files.
+ * @param dir_path string path to directory that hopefully contains a
+ * contents.md or readme.md
+ * @returns Readme object with a contents array for the strings in contents.md
+ * and a details string for the text in readme.md
+ */
 function getReadme(dir_path: string): Readme {
     let result: Readme = {};
     for (const file of fs.readdirSync(dir_path)) {

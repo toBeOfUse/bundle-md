@@ -11,6 +11,13 @@ interface Folder {
     treeSVG?: string;
 }
 
+/**
+ * Crawl a folder and turn it into a Folder object.
+ * @param dir_path string path to root directory which will recursively be
+ * turned into a Folder object; can be relative or absolute
+ * @returns Folder object complete with children; the root with a treeSVG image;
+ * all with a Readme object based on their contents.md and readme.md files
+ */
 function crawl(dir_path: string): Folder {
     const result = recursiveCrawl(dir_path, path.resolve(dir_path, "../"));
     result.treeSVG = buildDirSVG(result);
