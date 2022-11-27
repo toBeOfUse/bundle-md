@@ -21,7 +21,7 @@ parser.add_argument("roots", {
 parser.add_argument("--output", "-o", {
     metavar: "output_directory",
     type: "str",
-    default: "output"
+    default: "bundle-md-output"
 });
 
 const args = parser.parse_args();
