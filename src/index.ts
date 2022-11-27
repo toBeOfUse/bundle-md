@@ -24,11 +24,32 @@ parser.add_argument("--output", "-o", {
     default: "bundle-md-output"
 });
 
+parser.add_argument("--exclude", "-e", {
+    metavar: "exclude_directories",
+    type: "str",
+    nargs: "+"
+});
+
 const args = parser.parse_args();
 const output_dir = path.resolve(process.cwd(), args.output);
-const roots = args.roots.map((r: string) => path.resolve(process.cwd(), r));
+const resolver = (p: string) => path.resolve(process.cwd(), p);
+const roots = args.roots.map(resolver);
+const excluded = args.exclude?.map(resolver) || ["node_modules", ".git"];
 
 const folders: Folder[] = roots.map(crawl);
+(function removeExcluded(retrieved: Folder[], excluded: Set<string>) {
+    let i = 0;
+    while (i < retrieved.length) {
+        if (excluded.has(retrieved[i].path)) {
+            // console.log(retrieved[i].path, "is in excluded set", excluded);
+            retrieved.splice(i, 1);
+        } else {
+            // console.log(retrieved[i].path, "is not in excluded set", excluded);
+            removeExcluded(retrieved[i].children, excluded);
+            ++i;
+        }
+    }
+})(folders, new Set(excluded));
 
 for (let i = 0; i < folders.length; i++) {
     const root = roots[i];
