@@ -19,22 +19,22 @@ interface Folder {
  * all with a Readme object based on their contents.md and readme.md files
  */
 function crawl(dir_path: string): Folder {
-    const result = recursiveCrawl(dir_path, path.resolve(dir_path, "../"));
+    const result = recursiveCrawl(dir_path);
     result.treeSVG = buildDirSVG(result);
     return result;
 }
 
-function recursiveCrawl(dir_path: string, base_path: string): Folder {
+function recursiveCrawl(dir_path: string): Folder {
     const children = fs.readdirSync(dir_path)
         .map(c => path.join(dir_path, c)).sort();
     const folder: Folder = {
-        path: path.relative(base_path, dir_path),
+        path: dir_path,
         children: [] as Folder[],
         description: getReadme(dir_path)
     };
     for (const child of children) {
         if (fs.lstatSync(child).isDirectory()) {
-            folder.children.push(recursiveCrawl(child, base_path));
+            folder.children.push(recursiveCrawl(child));
         }
     }
     return folder;

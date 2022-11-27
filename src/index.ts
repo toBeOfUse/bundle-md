@@ -22,14 +22,13 @@ parser.add_argument("--output", "-o", {
     metavar: "output_directory",
     type: "str",
     default: "output"
-})
+});
 
 const args = parser.parse_args();
 const output_dir = path.resolve(process.cwd(), args.output);
+const roots = args.roots.map((r: string) => path.resolve(process.cwd(), r));
 
-const folders: Folder[] = args.roots.map((r: string) => crawl(path.resolve(r)));
-const documents = folders.map(
-    f => compileMarkdown(f, output_dir)
-);
+const folders: Folder[] = roots.map((r: string) => crawl(r));
+const documents = folders.map(f => compileMarkdown(f, output_dir));
 
 fs.outputFileSync(path.resolve(output_dir, "bundle.md"), documents.join("\n\n"));
