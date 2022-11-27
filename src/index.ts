@@ -7,6 +7,7 @@ import { ArgumentParser } from "argparse";
 
 import { crawl, Folder, makePathsRelativeTo } from "./crawler";
 import { compileMarkdown } from "./markdowner";
+import { buildDirSVG } from "./drawer";
 
 const parser = new ArgumentParser({
     description: "Bundle README files from different directories into a single Markdown file."
@@ -54,6 +55,7 @@ const folders: Folder[] = roots.map(crawl);
 for (let i = 0; i < folders.length; i++) {
     const root = roots[i];
     makePathsRelativeTo(folders[i], root, "/");
+    folders[i].treeSVG = buildDirSVG(folders[i]);
 }
 
 const documents = folders.map(f => compileMarkdown(f, output_dir));

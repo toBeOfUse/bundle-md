@@ -15,12 +15,11 @@ interface Folder {
  * Crawl a folder and turn it into a Folder object.
  * @param dir_path string path to root directory which will recursively be
  * turned into a Folder object; can be relative or absolute
- * @returns Folder object complete with children; the root with a treeSVG image;
- * all with a Readme object based on their contents.md and readme.md files
+ * @returns Folder object complete with children, all with a Readme object based
+ * on their contents.md and readme.md files (but no treeSVG)
  */
 function crawl(dir_path: string): Folder {
     const result = recursiveCrawl(dir_path);
-    result.treeSVG = buildDirSVG(result);
     return result;
 }
 
@@ -51,7 +50,6 @@ function recursiveCrawl(dir_path: string): Folder {
 function makePathsRelativeTo(
     folder: Folder, root_path: string, useSep: string = path.sep
 ) {
-    console.log("making", folder.path, "relative to", root_path, "with separator", useSep);
     folder.path = path.basename(root_path) + path.sep +
         path.relative(root_path, folder.path);
     folder.path = folder.path.split(path.sep).join(useSep);
@@ -59,7 +57,6 @@ function makePathsRelativeTo(
         // trim trailing slash if necessary
         folder.path = folder.path.substring(0, folder.path.length - 1);
     }
-    console.log("result:", folder.path);
     for (const child of folder.children) {
         makePathsRelativeTo(child, root_path, useSep);
     }
