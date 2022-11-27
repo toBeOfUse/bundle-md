@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 
 interface Readme {
-    contents?: string[];
+    contents: string[];
     details?: string;
 }
 
@@ -14,15 +14,18 @@ interface Readme {
  * and a details string for the text in readme.md
  */
 function getReadme(dir_path: string): Readme {
-    let result: Readme = {};
-    for (const file of fs.readdirSync(dir_path)) {
-        const casefoldName = path.parse(file).base.toLowerCase();
-        const fullPath = path.resolve(dir_path, file);
+    let result: Readme = { contents: [] };
+    for (const dirent of fs.readdirSync(dir_path, { withFileTypes: true })) {
+        if (!dirent.isFile()) {
+            continue;
+        }
+        const fullPath = path.resolve(dir_path, dirent.name);
+        const casefoldName = dirent.name.toLowerCase();
         if (casefoldName == "readme.md") {
             result.details = fs.readFileSync(fullPath, { encoding: "utf-8" });
         } else if (casefoldName == "contents.md") {
             result.contents = fs.readFileSync(fullPath, { encoding: "utf-8" })
-                .trim().split("\n").filter(l => l.trim().length > 0);
+                .trim().split("\n").map(l => l.trim()).filter(l => l.length > 0);
         }
     }
     return result;
