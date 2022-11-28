@@ -7,12 +7,11 @@ const doc = new JSDOM("").window.document;
 
 import { Folder } from "./crawler";
 
-const lineHeight = 10;
-const indentWidth = 10;
-const textHeight = 6;
-const iconHeight = 8;
-const imageWidth = 250;
-const padding = 5;
+const lineHeight = 20;
+const indentWidth = 20;
+const textHeight = 12;
+const iconHeight = 16;
+const padding = 10;
 
 function getLineGroup(
     type: "file" | "folder", index: number, depth: number, text: string
@@ -32,7 +31,7 @@ function getLineGroup(
     return g;
 }
 
-function buildDirSVG(root: Folder): string {
+function buildDirSVG(root: Folder, imageWidth: number): string {
     const svg = doc.createElement("svg");
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     const defs = doc.createElement("defs");

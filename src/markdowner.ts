@@ -54,13 +54,16 @@ function buildDocument(
  * the Markdown string and image files. Paths need to be pre-formatted strings.
  * @param output_path string path being used for the program's output; used to
  * save images.
+ * @param image_width number that will be used as the width attribute in the
+ * output img tags.
  * @param images_dir name of the image directory. images will be saved to
  * output_path/images_dir.
  * @returns Markdown string containing hotlinks to images (using the relative
  * path images_dir/image_filename.svg) and text from folder.description.details
  */
 function compileMarkdown(
-    folder: Folder, output_path: string, images_dirname: string = "images"
+    folder: Folder, output_path: string,
+    image_width: number, images_dirname: string = "images"
 ): string {
     const imagesPath = path.resolve(output_path, images_dirname);
     const document = buildDocument(folder, 1, images_dirname);
@@ -71,7 +74,9 @@ function compileMarkdown(
         } else {
             const imagePath = path.resolve(imagesPath, element.filename);
             fs.outputFileSync(imagePath, element.xml);
-            result += `\n![file tree](${images_dirname}/${element.filename})\n`
+            result +=
+                `\n\n<img src="${images_dirname}/${element.filename}" ` +
+                `width="${image_width}" height="auto">\n\n`;
         }
     }
     return result;

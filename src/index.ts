@@ -49,6 +49,18 @@ parser.add_argument("--extra-tree", {
     nargs: "+"
 });
 
+parser.add_argument("--image-width", {
+    metavar: "image_width_px",
+    type: "int",
+    default: 500
+});
+
+parser.add_argument("--image-scale", {
+    metavar: "image_display_scale",
+    type: "float",
+    default: 1.0
+});
+
 parser.add_argument("--signoff", {
     action: BooleanOptionalAction,
 });
@@ -61,6 +73,8 @@ const exclude_globs: string[] = args.exclude_glob || ["**/node_modules", "**/.*"
 const excluded: string[] = args.exclude?.map(resolver) || [];
 const no_tree = new Set<string>(args.no_tree?.map(resolver) || []);
 const extra_tree = new Set<string>(args.extra_tree?.map(resolver) || []);
+const image_width: number = args.image_width;
+const image_scale: number = args.image_scale;
 const signoff = !!args.signoff;
 
 console.log("crawling folders");
@@ -75,7 +89,7 @@ console.log("drawing trees");
             (roots.includes(folder.path) && !no_tree.has(folder.path)) ||
             extra_tree.has(folder.path)
         ) {
-            folder.treeSVG = buildDirSVG(folder);
+            folder.treeSVG = buildDirSVG(folder, image_width);
         }
         drawTrees(folder.children);
     }
@@ -88,7 +102,9 @@ for (let i = 0; i < folders.length; i++) {
 }
 
 console.log("gathering markdown and images");
-const documents = folders.map(f => compileMarkdown(f, output_dir));
+const documents = folders.map(
+    f => compileMarkdown(f, output_dir, image_width * image_scale)
+);
 
 const output_file = path.resolve(output_dir, "bundle.md");
 let markdown_string = documents.join("\n\n");

@@ -24,6 +24,8 @@ If there is more than one root directory, each will be processed separately and 
   --exclude-glob exclude_glob [exclude_glob ...] = ["**/node_modules", "**/.*"]
   --no-tree treeless_directories [treeless_directories ...]
   --extra-tree extra_tree_directories [extra_tree_directories ...]
+  --image-width image_width_px = 500
+  --image-scale image_display_scale = 1.0
   --signoff, --no-signoff
 ```
 
@@ -32,6 +34,8 @@ All directory paths should be specified relative to the current working director
 By default, the `exclude_glob` option is set to ignore "node_modules" folders and those whose names start with ".", like ".git". If you specify your own glob patterns for folders to ignore, those will be overwritten by your patterns.
 
 `no-tree` can be used to avoid a graphical file tree being created for a folder, either because it's irrelevant or because it's too big and you want separate trees for its subfolders. For the latter case, exclude a folder with `--no-tree` and get tree diagrams for its subfolders by passing them to `--extra-tree`.
+
+`image-width` allows you to expand or contract the horizontal space available in the file tree images for directory names and contents strings. By default, these images are 500px wide. To make the image appear larger for readability or smaller to fit within a page, use `image-scale` with a scale factor value of perhaps 0.75 or 1.3. This will only affect how the image is displayed; its contents will simply be scaled.
 
 `signoff` defaults to true, meaning that the output file will end with a disclaimer that it's automatically generated. Specify `--no-signoff` to avoid this.
 
