@@ -60,9 +60,13 @@ function makePathsRelativeTo(
     folder.path = path.basename(root_path) + path.sep +
         path.relative(root_path, folder.path);
     folder.path = folder.path.split(path.sep).join(useSep);
-    if (folder.path.endsWith(useSep)) {
-        // trim trailing slash if necessary
-        folder.path = folder.path.substring(0, folder.path.length - 1);
+    if (!folder.path.startsWith(useSep)) {
+        // add opening slash if necessary
+        folder.path = useSep + folder.path
+    }
+    if (!folder.path.endsWith(useSep)) {
+        // add ending slash if necessary
+        folder.path = folder.path + useSep;
     }
     for (const child of folder.children) {
         makePathsRelativeTo(child, root_path, useSep);
