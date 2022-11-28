@@ -1,6 +1,6 @@
 # Bundle.md
 
-This is a command-line tool that will traverse a repository, find its README.md and CONTENTS.md files, and bundle them into a single Markdown document.
+This is a command-line tool that will traverse a repository, find its README.md and CONTENTS.md files, and bundle them into a single Markdown document. The result looks like this:
 
 ![example](sample.png)
 
