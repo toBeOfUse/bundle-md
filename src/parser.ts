@@ -3,7 +3,7 @@ import path from "path";
 
 interface Readme {
     contents: string[];
-    details?: string;
+    details?: string[];
 }
 
 /**
@@ -24,7 +24,8 @@ function getReadme(dir_path: string): Readme {
         // console.log("dirent:", dirent);
         if (casefoldName == "readme.md") {
             // console.log("which is a readme! at path", fullPath);
-            result.details = fs.readFileSync(fullPath, { encoding: "utf-8" });
+            result.details = fs.readFileSync(fullPath, { encoding: "utf-8" })
+                .split("<!-- subfolders -->");
         } else if (casefoldName == "contents.md") {
             result.contents = fs.readFileSync(fullPath, { encoding: "utf-8" })
                 .trim().split("\n").map(l => l.trim()).filter(l => l.length > 0);

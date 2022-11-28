@@ -16,10 +16,8 @@ function buildDocument(
     folder: Folder, depth: number, images_dir: string
 ): MDDocument {
     let result: MDDocument = [];
-    if (folder.description?.details || folder.treeSVG) {
-        result.push(
-            Array(depth).fill("#").join("") + " " + folder.path.replace("\\", "/")
-        );
+    if (folder.description?.details?.length || folder.treeSVG) {
+        result.push(Array(depth).fill("#").join("") + " " + folder.path);
     }
     if (folder.treeSVG) {
         result.push({
@@ -28,11 +26,19 @@ function buildDocument(
                 "-" + hash(folder.treeSVG) + ".svg"
         });
     }
+    const hasSubfoldersHole = folder.description?.details && folder.description.details.length > 1;
     if (folder.description?.details) {
-        result.push(folder.description.details);
+        result.push(folder.description.details[0]);
+        if (hasSubfoldersHole) {
+            result.push(`\n\n<details open><summary>Subfolders of ${folder.path}</summary>\n\n`);
+        }
     }
     for (const child of folder.children) {
         result = result.concat(buildDocument(child, depth + 1, images_dir));
+    }
+    if (hasSubfoldersHole) {
+        result.push("\n\n<hr>\n\n</details>\n\n");  // no such thing as too many newlines
+        result = result.concat(folder.description!.details!.slice(1));
     }
     return result;
 }
