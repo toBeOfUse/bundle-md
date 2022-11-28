@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import fs from "fs-extra";
 import path from "path";
 
+import fs from "fs-extra";
 import { ArgumentParser } from "argparse";
 
 import { crawl, Folder, makePathsRelativeTo } from "./crawler";
@@ -31,33 +31,60 @@ parser.add_argument("--exclude", "-e", {
     nargs: "+"
 });
 
+parser.add_argument("--exclude-glob", {
+    metavar: "exclude_glob",
+    type: "str",
+    nargs: "+"
+});
+
+parser.add_argument("--no-tree", {
+    metavar: "treeless_directories",
+    type: "str",
+    nargs: "+"
+});
+
+parser.add_argument("--extra-tree", {
+    metavar: "extra_tree_directories",
+    type: "str",
+    nargs: "+"
+});
+
 const args = parser.parse_args();
 const output_dir = path.resolve(process.cwd(), args.output);
 const resolver = (p: string) => path.resolve(process.cwd(), p);
-const roots = args.roots.map(resolver);
-const excluded = args.exclude?.map(resolver) || ["node_modules", ".git"];
+const roots: string[] = args.roots.map(resolver);
+const exclude_globs: string[] = args.exclude_glob || ["**/node_modules", "**/.*"];
+const excluded: string[] = args.exclude?.map(resolver) || [];
+const no_tree = new Set<string>(args.no_tree?.map(resolver) || []);
+const extra_tree = new Set<string>(args.extra_tree?.map(resolver) || []);
 
-const folders: Folder[] = roots.map(crawl);
-(function removeExcluded(retrieved: Folder[], excluded: Set<string>) {
-    let i = 0;
-    while (i < retrieved.length) {
-        if (excluded.has(retrieved[i].path)) {
-            // console.log(retrieved[i].path, "is in excluded set", excluded);
-            retrieved.splice(i, 1);
-        } else {
-            // console.log(retrieved[i].path, "is not in excluded set", excluded);
-            removeExcluded(retrieved[i].children, excluded);
-            ++i;
+console.log("crawling folders");
+const folders: Folder[] = roots
+    .filter(r => !excluded.includes(r))
+    .map(r => crawl(r, excluded.concat(exclude_globs)));
+
+console.log("drawing trees");
+(function drawTrees(retrieved: Folder[]) {
+    for (const folder of retrieved) {
+        if (
+            (roots.includes(folder.path) && !no_tree.has(folder.path)) ||
+            extra_tree.has(folder.path)
+        ) {
+            folder.treeSVG = buildDirSVG(folder);
         }
+        drawTrees(folder.children);
     }
-})(folders, new Set(excluded));
+})(folders);
 
+console.log("formatting paths");
 for (let i = 0; i < folders.length; i++) {
     const root = roots[i];
     makePathsRelativeTo(folders[i], root, "/");
-    folders[i].treeSVG = buildDirSVG(folders[i]);
 }
 
+console.log("gathering markdown and images");
 const documents = folders.map(f => compileMarkdown(f, output_dir));
 
-fs.outputFileSync(path.resolve(output_dir, "bundle.md"), documents.join("\n\n"));
+const output_file = path.resolve(output_dir, "bundle.md");
+fs.outputFileSync(output_file, documents.join("\n\n"));
+console.log("output markdown to " + output_file);

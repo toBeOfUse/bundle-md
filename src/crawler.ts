@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
 
+import minimatch from "minimatch";
+
 import { Readme, getReadme } from "./parser";
-import { buildDirSVG } from "./drawer";
 
 interface Folder {
     path: string;
@@ -18,12 +19,14 @@ interface Folder {
  * @returns Folder object complete with children, all with a Readme object based
  * on their contents.md and readme.md files (but no treeSVG)
  */
-function crawl(dir_path: string): Folder {
-    const result = recursiveCrawl(dir_path);
+function crawl(
+    dir_path: string, exclude_globs: string[]
+): Folder {
+    const result = recursiveCrawl(dir_path, exclude_globs);
     return result;
 }
 
-function recursiveCrawl(dir_path: string): Folder {
+function recursiveCrawl(dir_path: string, exclude: string[]): Folder {
     const children = fs.readdirSync(dir_path)
         .map(c => path.join(dir_path, c)).sort();
     const folder: Folder = {
@@ -32,8 +35,12 @@ function recursiveCrawl(dir_path: string): Folder {
         description: getReadme(dir_path)
     };
     for (const child of children) {
-        if (fs.lstatSync(child).isDirectory()) {
-            folder.children.push(recursiveCrawl(child));
+        const path_for_glob = child.split("\\").join("/");
+        if (
+            fs.lstatSync(child).isDirectory() &&
+            !exclude.some(e => minimatch(path_for_glob, e))
+        ) {
+            folder.children.push(recursiveCrawl(child, exclude));
         }
     }
     return folder;
