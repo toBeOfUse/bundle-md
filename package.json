@@ -19,6 +19,10 @@
     "markdown",
     "readme"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toBeOfUse/bundle-md.git"
+  },
   "devDependencies": {
     "@types/argparse": "^2.0.10",
     "@types/fs-extra": "^9.0.13",
