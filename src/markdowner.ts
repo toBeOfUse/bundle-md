@@ -17,7 +17,10 @@ function buildDocument(
 ): MDDocument {
     let result: MDDocument = [];
     if (folder.description?.details?.length || folder.treeSVG) {
-        result.push(Array(depth).fill("#").join("") + " " + folder.path);
+        const header = folder.link ?
+            `[${folder.path}](${folder.link})` :
+            folder.path;
+        result.push(Array(depth).fill("#").join("") + " " + header);
     }
     if (folder.treeSVG) {
         result.push({

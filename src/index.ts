@@ -61,6 +61,11 @@ parser.add_argument("--image-scale", {
     default: 1.0
 });
 
+parser.add_argument("--link-to", {
+    metavar: "url_base",
+    type: "str"
+});
+
 parser.add_argument("--signoff", {
     action: BooleanOptionalAction,
 });
@@ -75,6 +80,7 @@ const no_tree = new Set<string>(args.no_tree?.map(resolver) || []);
 const extra_tree = new Set<string>(args.extra_tree?.map(resolver) || []);
 const image_width: number = args.image_width;
 const image_scale: number = args.image_scale;
+const link_to: string | undefined = args.link_to;
 const signoff = !!args.signoff;
 
 console.log("crawling folders");
@@ -94,6 +100,21 @@ console.log("drawing trees");
         drawTrees(folder.children);
     }
 })(folders);
+
+// repeated recursive parsing. consolidate?? there are of course multiple needed
+// strategies across the project. also some commonality with makePathsRelative
+// in makeLinks
+if (link_to) {
+    (function makeLinks(folders: Folder[]) {
+        for (const folder of folders) {
+            const relative_path = path.relative(process.cwd(), folder.path)
+                .split("\\").join("/");
+            const url = link_to.endsWith("/") ? link_to : (link_to + "/");
+            folder.link = url + relative_path;
+            makeLinks(folder.children);
+        }
+    })(folders);
+}
 
 console.log("formatting paths");
 for (let i = 0; i < folders.length; i++) {

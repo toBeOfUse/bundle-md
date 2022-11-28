@@ -10,6 +10,7 @@ interface Folder {
     children: Folder[];
     description?: Readme;
     treeSVG?: string;
+    link?: string;
 }
 
 /**
@@ -32,7 +33,7 @@ function recursiveCrawl(dir_path: string, exclude: string[]): Folder {
     const folder: Folder = {
         path: dir_path,
         children: [] as Folder[],
-        description: getReadme(dir_path)
+        description: getReadme(dir_path),
     };
     for (const child of children) {
         const path_for_glob = child.split("\\").join("/");
