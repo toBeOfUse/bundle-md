@@ -2,6 +2,8 @@
 
 This is a command-line tool that will traverse a repository, find its README.md and CONTENTS.md files, and bundle them into a single Markdown document.
 
+![example](sample.png)
+
 Each readme file will become a section in the final file with the path as its heading, and each line in each "contents" file will be added to a file tree diagram.
 
 ## Usage:
