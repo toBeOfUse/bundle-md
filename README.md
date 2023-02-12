@@ -4,7 +4,7 @@ This is a command-line tool that will traverse a repository, find its README.md 
 
 ![example](sample.png)
 
-[\(Full example.)](https://github.com/toBeOfUse/bundle-md-test/wiki/Folder-Architecture) Each directory given to the program will become a section in the output Markdown file, with the directory's path as the heading, its file tree diagram displayed with the addition of each line in its subfolders' "contents" files, and finally the text of its "readme" file copied into the output directly. Then, this pattern repeats for each of its subfolders, in depth-first and alphabetical order (just like how directories are ordered in file managers.)
+[\(Full example.)](https://github.com/toBeOfUse/bundle-md-demo/wiki/Folder-Architecture) Each directory given to the program will become a section in the output Markdown file, with the directory's path as the heading, its file tree diagram displayed with the addition of each line in its subfolders' "contents" files, and finally the text of its "readme" file copied into the output directly. Then, this pattern repeats for each of its subfolders, in depth-first and alphabetical order (just like how directories are ordered in file managers.)
 
 If you want a folder's readme text to be separated into some text before and some text after its subfolders' sections, place the line `<!-- subfolders -->` in the folder's readme where you want the subfolder sections to go. If you do this, they will be enclosed in an HTML `<details>` folder element and followed by a horizontal rule to show where they start and end.
 
